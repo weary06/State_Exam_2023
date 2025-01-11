@@ -47,6 +47,7 @@ CREATE TABLE CATALOGO (
 CREATE TABLE VIDEOGIOCO (
     ID_Videogioco INT PRIMARY KEY AUTO_INCREMENT,
     Titolo VARCHAR(100) NOT NULL,
+    Materia VARCHAR(20) NOT NULL,
     Breve_Descrizione VARCHAR(160),
     Descrizione_Estesa TEXT,
     Monete_Ottenibili INT DEFAULT 0,
@@ -88,12 +89,31 @@ INSERT INTO CATALOGO (ID_Catalogo, Argomento, ID_Videogioco) VALUES
 (2, 'Legge di Ohm', 2),
 (3, 'Verismo', 3);
 
-INSERT INTO VIDEOGIOCO (ID_Videogioco, Titolo, Breve_Descrizione, Descrizione_Estesa, Monete_Ottenibili, ID_Classe, ID_Studente, ID_Catalogo) VALUES
-(1, 'Geometria Facile', 'Un gioco sui triangoli', 'Approfondisci le proprietà dei triangoli risolvendo quiz.', 100, 1, 'STU001', 1),
-(2, 'Circuiti Elettrici', 'Legge di Ohm', 'Impara le basi della legge di Ohm con simulazioni pratiche.', 120, 2, 'STU002', 2),
-(3, 'Scrittori Italiani', 'Verismo in letteratura', 'Conosci il Verismo attraverso quiz sui principali autori.', 80, 3, 'STU003', 3);
+INSERT INTO VIDEOGIOCO (ID_Videogioco, Titolo, Materia, Breve_Descrizione, Descrizione_Estesa, Monete_Ottenibili, ID_Classe, ID_Studente, ID_Catalogo) VALUES
+(1, 'Geometria Facile', 'Matematica', 'Un gioco sui triangoli', 'Approfondisci le proprietà dei triangoli risolvendo quiz.', 100, 1, 'STU001', 1),
+(2, 'Circuiti Elettrici', 'Elettronica', 'Legge di Ohm', 'Impara le basi della legge di Ohm con simulazioni pratiche.', 120, 2, 'STU002', 2),
+(3, 'Scrittori Italiani', 'Italiano', 'Verismo in letteratura', 'Conosci il Verismo attraverso quiz sui principali autori.', 80, 3, 'STU003', 3);
 
 INSERT INTO GIOCA (CF_Studente, ID_Videogioco, Monete_Ottenute) VALUES
 ('STU001', 1, 50),
 ('STU002', 2, 30),
 ('STU003', 3, 20);
+
+SELECT V.Titolo, C.Argomento
+FROM VIDEOGIOCO V
+JOIN CATALOGO C ON V.ID_Catalogo = C.ID_Catalogo
+WHERE C.Argomento = 'Matematica'
+ORDER BY V.Titolo ASC;
+
+SELECT S.Nome, S.Cognome, G.Monete_Ottenute
+FROM STUDENTE S
+JOIN GIOCA G ON S.CF_Studente = G.CF_Studente
+WHERE S.ID_Classe = 1 
+  AND G.ID_Videogioco = 1 
+ORDER BY G.Monete_Ottenute DESC;
+
+SELECT C.ID_Catalogo, C.Argomento, COUNT(DISTINCT CV.ID_Classe) AS Numero_Classi
+FROM CATALOGO C
+JOIN VIDEOGIOCO V ON C.ID_Videogioco = V.ID_Videogioco
+JOIN CLASSI_VIRTUALI CV ON V.ID_Videogioco = CV.ID_Videogioco
+GROUP BY C.ID_Catalogo, C.Argomento;
